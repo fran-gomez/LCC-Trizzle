@@ -1,8 +1,5 @@
 :- use_module(library(clpfd)).
 
-:- dynamic desplazar_columna/4.
-:- dynamic desplazar_fila/4.
-
 % El predicado desplazar es el encargado principal
 % de la dinamica del juego, desplazando la fila o
 % columna especificada en una cantidad de lugares
@@ -19,17 +16,51 @@
 % -EvoTablero: Parametro de salida que contiene la
 %              evolucion del tablero al que se le
 %              aplico el movimiento. Ver docs.
-desplazar("izq", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, -Cant, Tablero, EvoTablero).
-
 desplazar("der", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, Cant, Tablero, EvoTablero).
+    desplazar_fila(Num, (-Cant), Tablero, Nuevo),
+    EvoTablero = Nuevo.
+
+desplazar("izq", Num, Cant, Tablero, EvoTablero) :-
+    desplazar_fila(Num, Cant, Tablero, Nuevo),
+    EvoTablero = Nuevo.
 
 desplazar("arriba", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, Cant, Tablero, EvoTablero).
+    desplazar_columna(Num, Cant, Tablero, Nuevo),
+    EvoTablero = Nuevo.
 
 desplazar("abajo", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, Cant, Tablero, EvoTablero).
+    desplazar_columna(Num, (-Cant), Tablero, Nuevo),
+    EvoTablero = Nuevo.
+
+% El predicado desplazar_fila desplaza la N-esima
+% fila del tablero en una determinada cantidad de
+% posiciones. (Derecha o Izquierda).
+%
+% +N: Numero de fila a desplazar
+% +Cant: Cantidad de posiciones a desplazar la fila
+% +T: Tablero, dividido en Head|Tail
+% -D: Fila desplazada... Creo que aca se rompe todo
+desplazar_fila(N, Cant, [_T|Ts], D) :-
+    N > 0,
+    desplazar_fila(N-1, Cant, Ts, D).
+desplazar_fila(N, Cant, T, D) :-
+    N = 0,
+    rotar_n(Cant, T, D).
+
+% El predicado desplazar_columna desplaza la N-esima
+% columna del tablero en una determinada cantidad de
+% posiciones. (Arriba o Abajo).
+% Para simplificar la operatoria, el desplazamiento
+% se reduce a trasponer la matriz que representa al
+% tablero, luego se desplaza la fila correspondiente,
+% y finalmente, se vuelve a trasponer la matriz a su
+% version original.
+%
+% Los parametros son los mismos que desplazar_fila
+desplazar_columna(N, Cant, Tablero, D) :-
+    transpose(Tablero, Trasp),
+    desplazar_fila(N, Cant, Trasp, D1),
+    transpose(D1, D).
 
 % El predicado rotar_n desplaza una lista N posiciones
 % a derecha o izquierda, segun el signo de N.
@@ -41,17 +72,17 @@ desplazar("abajo", Num, Cant, Tablero, EvoTablero) :-
 rotar_n(0, L, L). :- !.
 rotar_n(N, L1, L2) :- 
     N < 0,
-    rotar("der", L1, L),
+    rotar("izq", L1, L),
     N1 is N+1,
     rotar_n(N1, L, L2).
 rotar_n(N, L1, L2) :-
     N > 0,
-    rotar("izq", L1, L),
+    rotar("der", L1, L),
     N1 is N-1,
     rotar_n(N1, L, L2).
 
-rotar("der", L, [T|H]) :- append(H, [T], L).
-rotar("izq", [H|T], L) :- append(T, [H], L).
+rotar("izq", L, [T|H]) :- append(H, [T], L).
+rotar("der", [H|T], L) :- append(T, [H], L).
     
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
