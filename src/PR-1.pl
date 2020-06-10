@@ -17,20 +17,20 @@
 %              evolucion del tablero al que se le
 %              aplico el movimiento. Ver docs.
 desplazar("der", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, (-Cant), Tablero, Nuevo),
-    EvoTablero = Nuevo.
+    desplazar_fila(Num, (-Cant), Tablero, Tablero1),
+    append(Tablero1, [], EvoTablero).
 
 desplazar("izq", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, Cant, Tablero, Nuevo),
-    EvoTablero = Nuevo.
+    desplazar_fila(Num, Cant, Tablero, Tablero1),
+    append(Tablero1, [], EvoTablero).
 
 desplazar("arriba", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, Cant, Tablero, Nuevo),
-    EvoTablero = Nuevo.
+    desplazar_columna(Num, Cant, Tablero, Tablero1),
+    append(Tablero1, [], EvoTablero).
 
 desplazar("abajo", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, (-Cant), Tablero, Nuevo),
-    EvoTablero = Nuevo.
+    desplazar_columna(Num, (-Cant), Tablero, Tablero1),
+    append(Tablero1, [], EvoTablero).
 
 % El predicado desplazar_fila desplaza la N-esima
 % fila del tablero en una determinada cantidad de
@@ -40,12 +40,13 @@ desplazar("abajo", Num, Cant, Tablero, EvoTablero) :-
 % +Cant: Cantidad de posiciones a desplazar la fila
 % +T: Tablero, dividido en Head|Tail
 % -D: Fila desplazada... Creo que aca se rompe todo
-desplazar_fila(N, Cant, [_T|Ts], D) :-
+desplazar_fila(N, Cant, [T|Ts], [T|D]) :-
     N > 0,
-    desplazar_fila(N-1, Cant, Ts, D).
-desplazar_fila(N, Cant, T, D) :-
-    N = 0,
-    rotar_n(Cant, T, D).
+    N1 is N-1,
+    desplazar_fila(N1, Cant, Ts, D).
+desplazar_fila(0, Cant, [T|Ts], D) :-
+    rotar_n(Cant, T, D1),
+    append([D1], Ts, D).
 
 % El predicado desplazar_columna desplaza la N-esima
 % columna del tablero en una determinada cantidad de
@@ -69,7 +70,7 @@ desplazar_columna(N, Cant, Tablero, D) :-
 %     N > 0, izquierda si N < 0.
 % +L1: Lista a rotar.
 % -L2: Lista rotada.
-rotar_n(0, L, L). :- !.
+rotar_n(0, L, L).
 rotar_n(N, L1, L2) :- 
     N < 0,
     rotar("izq", L1, L),
@@ -81,8 +82,8 @@ rotar_n(N, L1, L2) :-
     N1 is N-1,
     rotar_n(N1, L, L2).
 
-rotar("izq", L, [T|H]) :- append(H, [T], L).
-rotar("der", [H|T], L) :- append(T, [H], L).
+rotar("der", L, [T|H]) :- append(H, [T], L).
+rotar("izq", [H|T], L) :- append(T, [H], L).
     
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
