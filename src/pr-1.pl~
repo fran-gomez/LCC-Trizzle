@@ -129,44 +129,6 @@ verificar_consec(L, Principal, F):-
 
 verificar_consec(L, _Principal, L).
 
-verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L4):-
-    P0 == P1,
-    P1 == P2,
-    P2 == P3,
-    P3 == P4,
-    posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
-    intercambiar(L, 1, x, L0),
-    intercambiar(L0, 2, x, L1),
-    intercambiar(L1, 3, x, L2),
-    intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
-
-verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
-    P0 == P1,
-    P1 == P2,
-    P2 == P3,
-    posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
-    intercambiar(L, 0, x, L0),
-    intercambiar(L0, 1, x, L1),
-    intercambiar(L1, 2, x, L2),
-    intercambiar(L2, 3, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
-
-verificar_consec_aux(L, Principal, _P0, P1, P2, P3, P4, L4):-
-    P1 == P2,
-    P2 == P3,
-    P3 == P4,
-    posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
-    intercambiar(L, 1, x, L0),
-    intercambiar(L0, 2, x, L1),
-    intercambiar(L1, 3, x, L2),
-    intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
-
-
 verificar_consec_aux(L, Principal, P0, P1, P2, _P3, _P4, L3):-
     P0 == P1,
     P1 == P2,
@@ -197,6 +159,35 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     intercambiar(L1, 4, x, L2),
     intercambiar(L2, Principal, MAum, L3).
 
+verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
+    P0 == P1,
+    P1 == P2,
+    P2 == P3,
+    posicion_lista(L, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(L, 0, x, L0),
+    intercambiar(L0, 1, x, L1),
+    intercambiar(L1, 2, x, L2),
+    intercambiar(L2, 3, x, L3),
+    intercambiar(L3, Principal, MAum, L4).
+
+verificar_consec_aux(L, Principal, _P0, P1, P2, P3, P4, L4):-
+    P1 == P2,
+    P2 == P3,
+    P3 == P4,
+    posicion_lista(L, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(L, 1, x, L0),
+    intercambiar(L0, 2, x, L1),
+    intercambiar(L1, 3, x, L2),
+    intercambiar(L2, 4, x, L3),
+    intercambiar(L3, Principal, MAum, L4).
+
+verificar_consec_aux(L, P0, P1, P2, P3, P4):-
+    P0 =:= P1,
+    P1 =:= P2,
+    P2 =:= P3,
+    P3 =:= P4.
 
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
