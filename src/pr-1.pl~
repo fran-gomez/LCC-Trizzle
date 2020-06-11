@@ -1,4 +1,6 @@
 :- use_module(library(clpfd)).
+:- use_rendering(table).
+
 % El predicado aumentar/2 recibe una mamushka y almacena la
 % mamushka del siguiente tamaño.
 aumentar(r1, r2).
@@ -106,6 +108,14 @@ posicion_lista([_A | Tail], Pos, E):-
     P1 is Pos-1,
     posicion_lista(Tail, P1, E).
 
+% El predicado obtener_fila/3 recibe como parámetro una lista de listas (un tablero),
+% una posicion y almacena la fila en dicha posición, en la variable F.
+obtener_fila([A | _Tail], 0, A).
+
+obtener_fila([_A | Tail], N, F):-
+    N1 is N-1,
+    obtener_fila(Tail, N1, F).
+
 % El predicado intercambiar/4 intercambia el elemento en la posicion N
 % en la lista por el elemento E y almacena el resultado en T.
 intercambiar([_A | Tail], 0, E, [E | Tail]).
@@ -128,6 +138,44 @@ verificar_consec(L, Principal, F):-
     verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, F).
 
 verificar_consec(L, _Principal, L).
+
+verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L4):-
+    P0 == P1,
+    P1 == P2,
+    P2 == P3,
+    P3 == P4,
+    posicion_lista(L, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(L, 1, x, L0),
+    intercambiar(L0, 2, x, L1),
+    intercambiar(L1, 3, x, L2),
+    intercambiar(L2, 4, x, L3),
+    intercambiar(L3, Principal, MAum, L4).
+
+verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
+    P0 == P1,
+    P1 == P2,
+    P2 == P3,
+    posicion_lista(L, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(L, 0, x, L0),
+    intercambiar(L0, 1, x, L1),
+    intercambiar(L1, 2, x, L2),
+    intercambiar(L2, 3, x, L3),
+    intercambiar(L3, Principal, MAum, L4).
+
+verificar_consec_aux(L, Principal, _P0, P1, P2, P3, P4, L4):-
+    P1 == P2,
+    P2 == P3,
+    P3 == P4,
+    posicion_lista(L, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(L, 1, x, L0),
+    intercambiar(L0, 2, x, L1),
+    intercambiar(L1, 3, x, L2),
+    intercambiar(L2, 4, x, L3),
+    intercambiar(L3, Principal, MAum, L4).
+
 
 verificar_consec_aux(L, Principal, P0, P1, P2, _P3, _P4, L3):-
     P0 == P1,
@@ -159,35 +207,6 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     intercambiar(L1, 4, x, L2),
     intercambiar(L2, Principal, MAum, L3).
 
-verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
-    P0 == P1,
-    P1 == P2,
-    P2 == P3,
-    posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
-    intercambiar(L, 0, x, L0),
-    intercambiar(L0, 1, x, L1),
-    intercambiar(L1, 2, x, L2),
-    intercambiar(L2, 3, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
-
-verificar_consec_aux(L, Principal, _P0, P1, P2, P3, P4, L4):-
-    P1 == P2,
-    P2 == P3,
-    P3 == P4,
-    posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
-    intercambiar(L, 1, x, L0),
-    intercambiar(L0, 2, x, L1),
-    intercambiar(L1, 3, x, L2),
-    intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
-
-verificar_consec_aux(L, P0, P1, P2, P3, P4):-
-    P0 =:= P1,
-    P1 =:= P2,
-    P2 =:= P3,
-    P3 =:= P4.
 
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############

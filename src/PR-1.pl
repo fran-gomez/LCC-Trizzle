@@ -1,6 +1,8 @@
 :- use_module(library(clpfd)).
+:- use_rendering(table).
+
 % El predicado aumentar/2 recibe una mamushka y almacena la
-% mamushka del siguiente tama�o.
+% mamushka del siguiente tamaño.
 aumentar(r1, r2).
 aumentar(r2, r3).
 aumentar(r3, r3).
@@ -29,21 +31,25 @@ aumentar(a3, a3).
 % -EvoTablero: Parametro de salida que contiene la
 %              evolucion del tablero al que se le
 %              aplico el movimiento. Ver docs.
-desplazar("der", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, (-Cant), Tablero, Tablero1),
-    append(Tablero1, [], EvoTablero).
-
-desplazar("izq", Num, Cant, Tablero, EvoTablero) :-
+desplazar(der, Num, Cant, Tablero, EvoTablero) :-
     desplazar_fila(Num, Cant, Tablero, Tablero1),
-    append(Tablero1, [], EvoTablero).
+    append(Tablero1, [], Aux),
+    recorrer_columnas(Aux, Num, EvoTablero).
 
-desplazar("arriba", Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, Cant, Tablero, Tablero1),
-    append(Tablero1, [], EvoTablero).
+desplazar(izq, Num, Cant, Tablero, EvoTablero) :-
+    desplazar_fila(Num, (-Cant), Tablero, Tablero1),
+    append(Tablero1, [], Aux),
+    recorrer_columnas(Aux, Num, EvoTablero).
 
-desplazar("abajo", Num, Cant, Tablero, EvoTablero) :-
+desplazar(arriba, Num, Cant, Tablero, EvoTablero) :-
     desplazar_columna(Num, (-Cant), Tablero, Tablero1),
-    append(Tablero1, [], EvoTablero).
+    append(Tablero1, [], Aux),
+    recorrer_filas(Aux, Num, EvoTablero).
+
+desplazar(abajo, Num, Cant, Tablero, EvoTablero) :-
+    desplazar_columna(Num, Cant, Tablero, Tablero1),
+    append(Tablero1, [], Aux),
+    recorrer_filas(Aux, Num, EvoTablero).
 
 % El predicado desplazar_fila desplaza la N-esima
 % fila del tablero en una determinada cantidad de
@@ -106,6 +112,20 @@ posicion_lista([_A | Tail], Pos, E):-
     P1 is Pos-1,
     posicion_lista(Tail, P1, E).
 
+% El predicado obtener_columna/3 recibe como parametro una lista de listas (un tablero), 
+% una posición y almacena la columna en dicha posicion en la variable F.
+obtener_columna(Tablero, N, R):-
+    transpose(Tablero, TableroTransp),
+    obtener_fila(TableroTransp, N, R).
+
+% El predicado obtener_fila/3 recibe como parámetro una lista de listas (un tablero),
+% una posicion y almacena la fila en dicha posición en la variable F.
+obtener_fila([A | _Tail], 0, A).
+
+obtener_fila([_A | Tail], N, F):-
+    N1 is N-1,
+    obtener_fila(Tail, N1, F).
+
 % El predicado intercambiar/4 intercambia el elemento en la posicion N
 % en la lista por el elemento E y almacena el resultado en T.
 intercambiar([_A | Tail], 0, E, [E | Tail]).
@@ -114,6 +134,30 @@ intercambiar([A | Tail], N, E, T):-
     N1 is N-1,
     intercambiar(Tail, N1, E, R),
     append([A], R, T).
+
+% El predicado recorrer_columnas/3 recorre todas las columnas del tablero.
+%  Luego, colapsa todas las mamushkas que pueda sobre el elemento Principal.
+recorrer_columnas(Tablero, Principal, Res):-
+    transpose(Tablero, TableroTransp),
+    recorrer_filas(TableroTransp, Principal, Aux),
+    transpose(Aux, Res).
+
+% El predicado recorrer_filas/3 recorre todas las filas del tablero. Luego, colapsa todas
+% las mamushkas que pueda sobre el elemento Principal.
+recorrer_filas(Tablero, Principal, Res):-
+    recorrer_filas_aux(Tablero, Principal, 0, Res).
+    
+recorrer_filas_aux(Tablero, Principal, 4, Res):-
+    obtener_fila(Tablero, 4, Fila),
+    verificar_consec(Fila, Principal, R),
+    intercambiar(Tablero, 4, R, Res).
+
+recorrer_filas_aux(Tablero, Principal, N, Res):-
+    N1 is N+1,
+    obtener_fila(Tablero, N, Fila),
+    verificar_consec(Fila, Principal, R),
+    intercambiar(Tablero, N, R, Aux),
+    recorrer_filas_aux(Aux, Principal, N1, Res).
 
 % El predicado verificar_consec/3 verifica que hayan, al menos, 3
 % elementos consecutivos iguales en una lista. Luego, los colapsa
