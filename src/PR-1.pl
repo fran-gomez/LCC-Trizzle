@@ -112,7 +112,7 @@ posicion_lista([_A | Tail], Pos, E):-
     P1 is Pos-1,
     posicion_lista(Tail, P1, E).
 
-% El predicado obtener_columna/3 recibe como parametro una lista de listas (un tablero), 
+% El predicado obtener_columna/3 recibe como parametro una lista de listas (un tablero),
 % una posición y almacena la columna en dicha posicion en la variable F.
 obtener_columna(Tablero, N, R):-
     transpose(Tablero, TableroTransp),
@@ -145,8 +145,9 @@ recorrer_columnas(Tablero, Principal, Res):-
 % El predicado recorrer_filas/3 recorre todas las filas del tablero. Luego, colapsa todas
 % las mamushkas que pueda sobre el elemento Principal.
 recorrer_filas(Tablero, Principal, Res):-
-    recorrer_filas_aux(Tablero, Principal, 0, Res).
-    
+    recorrer_filas_aux(Tablero, Principal, 0, R1),
+    verificar_cruzadas(R1, Principal, Res).
+
 recorrer_filas_aux(Tablero, Principal, 4, Res):-
     obtener_fila(Tablero, 4, Fila),
     verificar_consec(Fila, Principal, R),
@@ -159,10 +160,162 @@ recorrer_filas_aux(Tablero, Principal, N, Res):-
     intercambiar(Tablero, N, R, Aux),
     recorrer_filas_aux(Aux, Principal, N1, Res).
 
+% El predicado verificar_cruzadas/3 verifica si se produjeron colapsos cruzados sobre la columna
+% principal en el Tablero. Utiliza el predicado auxiliar verificar_cruzadas_aux/8.
+% + Tablero: Tablero del juego.
+% + Principal: Posición de la columna principal en el tablero.
+% - Res: Tablero luego de los colapsos.
+verificar_cruzadas(Tablero, Principal, Res):-
+    obtener_columna(Tablero, Principal, C0),
+    posicion_lista(C0, 0, P0),
+    posicion_lista(C0, 1, P1),
+    posicion_lista(C0, 2, P2),
+    posicion_lista(C0, 3, P3),
+    posicion_lista(C0, 4, P4),
+	verificar_cruzadas_aux(Tablero, Principal, P0, P1, P2, P3, P4, Res).
+
+verificar_cruzadas_aux(Tablero, Principal, P0, P1, P2, P3, P4, T4):-
+    P0 == P1,
+    P1 == P2,
+    P2 == P3,
+    P3 == P4,
+    obtener_fila(Tablero, 0, L0),
+    obtener_fila(Tablero, 1, L1),
+    obtener_fila(Tablero, 2, L2),
+    obtener_fila(Tablero, 3, L3),
+    obtener_fila(Tablero, 4, L4),
+    cruzar(L0, Principal, Aux1),
+    cruzar(L1, Principal, Aux2),
+    cruzar(L2, Principal, Aux3),
+    cruzar(L3, Principal, Aux4),
+    cruzar(L4, Principal, Aux5),
+    intercambiar(Tablero, 0, Aux1, T0),
+    intercambiar(T0, 1, Aux2, T1),
+    intercambiar(T1, 2, Aux3, T2),
+    intercambiar(T2, 3, Aux4, T3),
+    intercambiar(T3, 4, Aux5, T4).
+
+verificar_cruzadas_aux(Tablero, Principal, P0, P1, P2, P3, _P4, T3):-
+    P0 == P1,
+    P1 == P2,
+    P2 == P3,
+    obtener_fila(Tablero, 0, L0),
+    obtener_fila(Tablero, 1, L1),
+    obtener_fila(Tablero, 2, L2),
+    obtener_fila(Tablero, 3, L3),
+    cruzar(L0, Principal, Aux1),
+    cruzar(L1, Principal, Aux2),
+    cruzar(L2, Principal, Aux3),
+    cruzar(L3, Principal, Aux4),
+    intercambiar(Tablero, 0, Aux1, T0),
+    intercambiar(T0, 1, Aux2, T1),
+    intercambiar(T1, 2, Aux3, T2),
+    intercambiar(T2, 3, Aux4, T3).
+
+verificar_cruzadas_aux(Tablero, Principal, _P0, P1, P2, P3, P4, T3):-
+    P1 == P2,
+    P2 == P3,
+    P3 == P4,
+    obtener_fila(Tablero, 1, L0),
+    obtener_fila(Tablero, 2, L1),
+    obtener_fila(Tablero, 3, L2),
+    obtener_fila(Tablero, 4, L3),
+    cruzar(L0, Principal, Aux1),
+    cruzar(L1, Principal, Aux2),
+    cruzar(L2, Principal, Aux3),
+    cruzar(L3, Principal, Aux4),
+    intercambiar(Tablero, 1, Aux1, T0),
+    intercambiar(T0, 2, Aux2, T1),
+    intercambiar(T1, 3, Aux3, T2),
+    intercambiar(T2, 4, Aux4, T3).
+
+verificar_cruzadas_aux(Tablero, Principal, P0, P1, P2, _P3, _P4, T2):-
+    P0 == P1,
+    P1 == P2,
+    obtener_fila(Tablero, 0, L0),
+    obtener_fila(Tablero, 1, L1),
+    obtener_fila(Tablero, 2, L2),
+    cruzar(L0, Principal, Aux1),
+    cruzar(L1, Principal, Aux2),
+    cruzar(L2, Principal, Aux3),
+    intercambiar(Tablero, 0, Aux1, T0),
+    intercambiar(T0, 1, Aux2, T1),
+    intercambiar(T1, 2, Aux3, T2).
+
+verificar_cruzadas_aux(Tablero, Principal, _P0, P1, P2, P3, _P4, T2):-
+    P1 == P2,
+    P2 == P3,
+    obtener_fila(Tablero, 1, L0),
+    obtener_fila(Tablero, 2, L1),
+    obtener_fila(Tablero, 3, L2),
+    cruzar(L0, Principal, Aux1),
+    cruzar(L1, Principal, Aux2),
+    cruzar(L2, Principal, Aux3),
+    intercambiar(Tablero, 1, Aux1, T0),
+    intercambiar(T0, 2, Aux2, T1),
+    intercambiar(T1, 3, Aux3, T2).
+
+verificar_cruzadas_aux(Tablero, Principal, _P0, _P1, P2, P3, P4, T2):-
+    P2 == P3,
+    P3 == P4,
+    obtener_fila(Tablero, 2, L0),
+    obtener_fila(Tablero, 3, L1),
+    obtener_fila(Tablero, 4, L2),
+    cruzar(L0, Principal, Aux1),
+    cruzar(L1, Principal, Aux2),
+    cruzar(L2, Principal, Aux3),
+    intercambiar(Tablero, 2, Aux1, T0),
+    intercambiar(T0, 3, Aux2, T1),
+    intercambiar(T1, 4, Aux3, T2).
+
+verificar_cruzadas_aux(Tablero, Principal, _P0, _P1, _P2, _P3, _P4, T4):-
+    obtener_fila(Tablero, 0, L0),
+    obtener_fila(Tablero, 1, L1),
+    obtener_fila(Tablero, 2, L2),
+    obtener_fila(Tablero, 3, L3),
+    obtener_fila(Tablero, 4, L4),
+    cruzar2(L0, Principal, Aux1),
+    cruzar2(L1, Principal, Aux2),
+    cruzar2(L2, Principal, Aux3),
+    cruzar2(L3, Principal, Aux4),
+    cruzar2(L4, Principal, Aux5),
+    intercambiar(Tablero, 0, Aux1, T0),
+    intercambiar(T0, 1, Aux2, T1),
+    intercambiar(T1, 2, Aux3, T2),
+    intercambiar(T2, 3, Aux4, T3),
+    intercambiar(T3, 4, Aux5, T4).
+
+% El predicado cruzar/3 verifica que haya en la lista L el elemento x. En caso de ser así, se verifica
+% que hubo un colapso en dicha lista. Por lo tanto, se debe intercambiar la mamushka principal en la lista
+% por la mamushka aumentada. Almacena la lista nueva. En el caso de que no haya colapsos en la columna principal,
+% se llama al predicado cruzar2/3.
+% + Lista: Lista a verificar.
+% + Principal: Posición de la columna principal en la lista.
+% - L2: Lista luego de los colapsos.
+cruzar(Lista, Principal, L2):-
+    member(x, Lista),
+    posicion_lista(Lista, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(Lista, Principal, MAum, L2).
+
+cruzar(Lista, Principal, L2):-
+    intercambiar(Lista, Principal, x, L2).
+
+cruzar2(Lista, Principal, L2):-
+    member(x, Lista),
+    posicion_lista(Lista, Principal, M),
+    aumentar(M, MAum),
+    intercambiar(Lista, Principal, MAum, L2).
+
+cruzar2(Lista, _Principal, Lista).
+
 % El predicado verificar_consec/3 verifica que hayan, al menos, 3
 % elementos consecutivos iguales en una lista. Luego, los colapsa
 % sobre el elemento Principal. Utiliza el predicado auxiliar
 % verificar_consec_aux/7
+% + L: Lista a verificar.
+% + Principal: Posición de la columna principal en la lista.
+% - F: Lista final con los colapsos producidos.
 verificar_consec(L, Principal, F):-
     posicion_lista(L, 0, P0),
     posicion_lista(L, 1, P1),
@@ -179,67 +332,61 @@ verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L4):-
     P2 == P3,
     P3 == P4,
     posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
     intercambiar(L, 1, x, L0),
     intercambiar(L0, 2, x, L1),
     intercambiar(L1, 3, x, L2),
     intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
+    intercambiar(L3, Principal, M, L4).
 
 verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
     P0 == P1,
     P1 == P2,
     P2 == P3,
     posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
     intercambiar(L, 0, x, L0),
     intercambiar(L0, 1, x, L1),
     intercambiar(L1, 2, x, L2),
     intercambiar(L2, 3, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
+    intercambiar(L3, Principal, M, L4).
 
 verificar_consec_aux(L, Principal, _P0, P1, P2, P3, P4, L4):-
     P1 == P2,
     P2 == P3,
     P3 == P4,
     posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
     intercambiar(L, 1, x, L0),
     intercambiar(L0, 2, x, L1),
     intercambiar(L1, 3, x, L2),
     intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, MAum, L4).
+    intercambiar(L3, Principal, M, L4).
 
 
 verificar_consec_aux(L, Principal, P0, P1, P2, _P3, _P4, L3):-
     P0 == P1,
     P1 == P2,
     posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
     intercambiar(L, 0, x, L0),
     intercambiar(L0, 1, x, L1),
     intercambiar(L1, 2, x, L2),
-    intercambiar(L2, Principal, MAum, L3).
+    intercambiar(L2, Principal, M, L3).
 
 verificar_consec_aux(L, Principal, _P0, P1, P2, P3, _P4, L3):-
     P1 == P2,
     P2 == P3,
     posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
     intercambiar(L, 1, x, L0),
     intercambiar(L0, 2, x, L1),
     intercambiar(L1, 3, x, L2),
-    intercambiar(L2, Principal, MAum, L3).
+    intercambiar(L2, Principal, M, L3).
 
 verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     P2 == P3,
     P3 == P4,
     posicion_lista(L, Principal, M),
-    aumentar(M, MAum),
     intercambiar(L, 2, x, L0),
     intercambiar(L0, 3, x, L1),
     intercambiar(L1, 4, x, L2),
-    intercambiar(L2, Principal, MAum, L3).
+    intercambiar(L2, Principal, M, L3).
 
 
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
