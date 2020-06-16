@@ -1,9 +1,9 @@
 :- use_module(library(clpfd)).
 :- use_rendering(table).
 
-adjacent(X, Y, [X,Y|_]).
-adjacent(X, Y, [_|Tail]) :-
-    adjacent(X, Y, Tail).
+adjacent(X, Y, Z, [X,Y,Z|_]).
+adjacent(X, Y, Z, [_|Tail]) :-
+    adjacent(X, Y, Z, Tail).
 
 % El predicado aumentar/2 recibe una mamushka y almacena la
 % mamushka del siguiente tamaño.
