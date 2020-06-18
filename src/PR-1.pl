@@ -328,19 +328,18 @@ verificar_consec(L, Principal, F):-
     posicion_lista(L, 4, P4),
     verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, F).
 
-verificar_consec(L, _Principal, L).
-
-verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L4):-
+verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L5):-
     P0 == P1,
     P1 == P2,
     P2 == P3,
     P3 == P4,
     posicion_lista(L, Principal, M),
-    intercambiar(L, 1, x, L0),
-    intercambiar(L0, 2, x, L1),
-    intercambiar(L1, 3, x, L2),
-    intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, M, L4).
+    intercambiar(L, 0, x, L0),
+    intercambiar(L0, 1, x, L1),
+    intercambiar(L1, 2, x, L2),
+    intercambiar(L2, 3, x, L3),
+    intercambiar(L3, 4, x, L4),
+    intercambiar(L4, Principal, M, L5).
 
 verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
     P0 == P1,
@@ -392,7 +391,7 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     intercambiar(L1, 4, x, L2),
     intercambiar(L2, Principal, M, L3).
 
-
+verificar_consec(L, _Principal, L),
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
 %%%%%%%%###%#############%########################################################%#((#(##%%%&%((((((####################%%%#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##############################%%%%
