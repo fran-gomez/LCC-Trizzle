@@ -459,4 +459,13 @@ test(desplazar) :-
     desplazar(abajo, 2, 1, Tablero, EvoTablero),
     writeln(EvoTablero).
 
+test(desplazar) :-
+    Tablero = [ [r1, r2, v2, v1, a3],
+                [r1, v3, a1, a1, r3],
+                [a3, r1, r1, v2, v3],
+                [r1, v2, r3, v2, a2],
+                [r1, a2, a3, v2, a1] ],
+    desplazar(izq, 2, 1, Tablero, EvoTablero),
+    writeln(EvoTablero).
+
 :- end_tests(desplazar).
