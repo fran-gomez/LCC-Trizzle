@@ -19,6 +19,10 @@ aumentar(a1, a2).
 aumentar(a2, a3).
 aumentar(a3, a3).
 
+mamushka_random(0, a1).
+mamushka_random(1, v1).
+mamushka_random(2, r1).
+
 % El predicado desplazar es el encargado principal
 % de la dinamica del juego, desplazando la fila o
 % columna especificada en una cantidad de lugares
@@ -393,6 +397,43 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     intercambiar(L1, 4, x, L2),
     intercambiar(L2, Principal, M, L3).
 
+% El predicado rellenar/2 rellena los espacios vacíos del tablero con
+% mamushkas al azar de tamaño 1. Utiliza los predicados auxiliares
+% rellenar_aux/2 y rellenar_aux_2/2.
+%
+% + Tablero: Tablero.
+% - F: Tablero rellenado con mamushkas al azar.
+rellenar(Tablero, F):-
+    transpose(Tablero, T1),
+    rellenar_aux(T1, T2),
+    transpose(T2, F).
+
+rellenar_aux([], []).
+
+rellenar_aux([Fila | Tail], [Fila | F]):-
+    not(member(x, Fila)),
+    rellenar_aux(Tail, F).
+
+rellenar_aux([Fila | Tail], [F1 | R]):-
+    rellenar_aux_2(Fila, F1),
+    rellenar_aux(Tail, R).
+
+rellenar_aux_2([], []).
+
+rellenar_aux_2([A | Tail], [A | F]):-
+    A \= x,
+    rellenar_aux_2(Tail, F).
+
+rellenar_aux_2([x | Tail], [M | R]):-
+    rellenar_aux_2(Tail, R),
+    random(0, 3, Random),
+    mamushka_random(Random, M).
+
+% El predicado print_matrix/1 imprime una lista de listas como una
+% matriz. Su función es pura y exclusivamente de testeo.
+print_matrix([]).
+print_matrix([H|T]) :- write(H), nl, print_matrix(T).
+
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
 %%%%%%%%###%#############%########################################################%#((#(##%%%&%((((((####################%%%#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##############################%%%%
@@ -469,3 +510,4 @@ test(desplazar) :-
     writeln(EvoTablero).
 
 :- end_tests(desplazar).
+

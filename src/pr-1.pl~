@@ -1,7 +1,12 @@
 :- use_module(library(clpfd)).
+:- use_rendering(table).
+
+adjacent(X, Y, Z, [X,Y,Z|_]).
+adjacent(X, Y, Z, [_|Tail]) :-
+    adjacent(X, Y, Z, Tail).
 
 % El predicado aumentar/2 recibe una mamushka y almacena la
-% mamushka del siguiente tamaÒo.
+% mamushka del siguiente tama√±o.
 aumentar(r1, r2).
 aumentar(r2, r3).
 aumentar(r3, r3).
@@ -13,6 +18,10 @@ aumentar(v3, v3).
 aumentar(a1, a2).
 aumentar(a2, a3).
 aumentar(a3, a3).
+
+mamushka_random(0, a1).
+mamushka_random(1, v1).
+mamushka_random(2, r1).
 
 % El predicado desplazar es el encargado principal
 % de la dinamica del juego, desplazando la fila o
@@ -112,13 +121,13 @@ posicion_lista([_A | Tail], Pos, E):-
     posicion_lista(Tail, P1, E).
 
 % El predicado obtener_columna/3 recibe como parametro una lista de listas (un tablero),
-% una posiciÛn y almacena la columna en dicha posicion en la variable F.
+% una posici√≥n y almacena la columna en dicha posicion en la variable F.
 obtener_columna(Tablero, N, R):-
     transpose(Tablero, TableroTransp),
     obtener_fila(TableroTransp, N, R).
 
-% El predicado obtener_fila/3 recibe como par·metro una lista de listas (un tablero),
-% una posicion y almacena la fila en dicha posiciÛn en la variable F.
+% El predicado obtener_fila/3 recibe como par√°metro una lista de listas (un tablero),
+% una posicion y almacena la fila en dicha posici√≥n en la variable F.
 obtener_fila([A | _Tail], 0, A).
 
 obtener_fila([_A | Tail], N, F):-
@@ -159,8 +168,11 @@ recorrer_filas_aux(Tablero, Principal, N, Res):-
     intercambiar(Tablero, N, R, Aux),
     recorrer_filas_aux(Aux, Principal, N1, Res).
 
-% El predicado verificar_cruzadas verifica si se produjeron colapsos cruzados sobre la columna
-% principal en el Tablero.
+% El predicado verificar_cruzadas/3 verifica si se produjeron colapsos cruzados sobre la columna
+% principal en el Tablero. Utiliza el predicado auxiliar verificar_cruzadas_aux/8.
+% + Tablero: Tablero del juego.
+% + Principal: Posici√≥n de la columna principal en el tablero.
+% - Res: Tablero luego de los colapsos.
 verificar_cruzadas(Tablero, Principal, Res):-
     obtener_columna(Tablero, Principal, C0),
     posicion_lista(C0, 0, P0),
@@ -281,11 +293,15 @@ verificar_cruzadas_aux(Tablero, Principal, _P0, _P1, _P2, _P3, _P4, T4):-
     intercambiar(T2, 3, Aux4, T3),
     intercambiar(T3, 4, Aux5, T4).
 
-% El predicado cruzar/4 verifica que haya en la lista L el elemento x. En caso de ser asÌ, se verifica
+% El predicado cruzar/3 verifica que haya en la lista L el elemento x. En caso de ser as√≠, se verifica
 % que hubo un colapso en dicha lista. Por lo tanto, se debe intercambiar la mamushka principal en la lista
-% por la mamushka aumentada. Almacena la lista nueva.
+% por la mamushka aumentada. Almacena la lista nueva. En el caso de que no haya colapsos en la columna principal,
+% se llama al predicado cruzar2/3.
+% + Lista: Lista a verificar.
+% + Principal: Posici√≥n de la columna principal en la lista.
+% - L2: Lista luego de los colapsos.
 cruzar(Lista, Principal, L2):-
-    member(Lista, x),
+    member(x, Lista),
     posicion_lista(Lista, Principal, M),
     aumentar(M, MAum),
     intercambiar(Lista, Principal, MAum, L2).
@@ -294,17 +310,20 @@ cruzar(Lista, Principal, L2):-
     intercambiar(Lista, Principal, x, L2).
 
 cruzar2(Lista, Principal, L2):-
-    member(Lista, x),
+    member(x, Lista),
     posicion_lista(Lista, Principal, M),
     aumentar(M, MAum),
     intercambiar(Lista, Principal, MAum, L2).
 
-cruzar2(_Tablero, Lista, _Principal, Lista).
+cruzar2(Lista, _Principal, Lista).
 
 % El predicado verificar_consec/3 verifica que hayan, al menos, 3
 % elementos consecutivos iguales en una lista. Luego, los colapsa
 % sobre el elemento Principal. Utiliza el predicado auxiliar
 % verificar_consec_aux/7
+% + L: Lista a verificar.
+% + Principal: Posici√≥n de la columna principal en la lista.
+% - F: Lista final con los colapsos producidos.
 verificar_consec(L, Principal, F):-
     posicion_lista(L, 0, P0),
     posicion_lista(L, 1, P1),
@@ -315,17 +334,18 @@ verificar_consec(L, Principal, F):-
 
 verificar_consec(L, _Principal, L).
 
-verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L4):-
+verificar_consec_aux(L, Principal, P0, P1, P2, P3, P4, L5):-
     P0 == P1,
     P1 == P2,
     P2 == P3,
     P3 == P4,
     posicion_lista(L, Principal, M),
-    intercambiar(L, 1, x, L0),
-    intercambiar(L0, 2, x, L1),
-    intercambiar(L1, 3, x, L2),
-    intercambiar(L2, 4, x, L3),
-    intercambiar(L3, Principal, M, L4).
+    intercambiar(L, 0, x, L0),
+    intercambiar(L0, 1, x, L1),
+    intercambiar(L1, 2, x, L2),
+    intercambiar(L2, 3, x, L3),
+    intercambiar(L3, 4, x, L4),
+    intercambiar(L4, Principal, M, L5).
 
 verificar_consec_aux(L, Principal, P0, P1, P2, P3, _P4, L4):-
     P0 == P1,
@@ -377,6 +397,42 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     intercambiar(L1, 4, x, L2),
     intercambiar(L2, Principal, M, L3).
 
+% El predicado rellenar/2 rellena los espacios vacÌos del tablero con
+% mamushkas al azar. Utiliza los predicados auxiliares rellenar_aux/2 y
+% rellenar_aux_2/2.
+%
+% + Tablero: Tablero.
+% - F: Tablero rellenado con mamushkas al azar.
+rellenar(Tablero, F):-
+    transpose(Tablero, T1),
+    rellenar_aux(T1, T2),
+    transpose(T2, F).
+
+rellenar_aux([], []).
+
+rellenar_aux([Fila | Tail], [Fila | F]):-
+    not(member(x, Fila)),
+    rellenar_aux(Tail, F).
+
+rellenar_aux([Fila | Tail], [F1 | R]):-
+    rellenar_aux_2(Fila, F1),
+    rellenar_aux(Tail, R).
+
+rellenar_aux_2([], []).
+
+rellenar_aux_2([A | Tail], [A | F]):-
+    A \= x,
+    rellenar_aux_2(Tail, F).
+
+rellenar_aux_2([x | Tail], [M | R]):-
+    rellenar_aux_2(Tail, R),
+    random(0, 3, Random),
+    mamushka_random(Random, M).
+
+% El predicado print_matrix/1 imprime una lista de listas como una
+% matriz. Su funciÛn es pura y exclusivamente de testeo.
+print_matrix([]).
+print_matrix([H|T]) :- write(H), nl, print_matrix(T).
 
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
@@ -432,3 +488,26 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
 %(((((((((((((((((//////((((#&&&&&&&@&&&&&&&&&&&&&&&@@@@@@@&&&&&&&@@@@%@@@@@@@@@@@@&*.       ,@@@@@@@@@@@@@@@&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@@@@@@@@&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&%%%%%%%%%%%
 %((((((((((((//((((((((##%&&&&&&&&&&&@@&&@&&&&&&&@@@@@@@@&&&&&&&&&&@@@@&#@@@@@@@@@@(,.    .   @@@@@@@@@@@@&@@&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@@@@@@@&@@@@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@@@@@@@@##########
 %(((((((((((((((###%&&&&&&&&&&&&&&@@@@@@@&&&&&&&&@@@@@@&&&&&&&&&&&&@@@&%&&@@@@@@@&@/,.    ....@@@@@@@@@@@@@&@&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&@@@@@@@&&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##########
+
+:- begin_tests(desplazar).
+
+test(desplazar) :-
+    Tablero = [ [r2, a2, r1, v1, a1],
+                [r3, a2, r1, v1, r2],
+                [a1, v1, v1, a2, r1],
+                [r1, v2, v2, a1, a3],
+                [a1, a3, a1, v1, v2] ],
+    desplazar(abajo, 2, 1, Tablero, EvoTablero),
+    writeln(EvoTablero).
+
+test(desplazar) :-
+    Tablero = [ [r1, r2, v2, v1, a3],
+                [r1, v3, a1, a1, r3],
+                [a3, r1, r1, v2, v3],
+                [r1, v2, r3, v2, a2],
+                [r1, a2, a3, v2, a1] ],
+    desplazar(izq, 2, 1, Tablero, EvoTablero),
+    writeln(EvoTablero).
+
+:- end_tests(desplazar).
+
