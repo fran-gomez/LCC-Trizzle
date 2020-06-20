@@ -1,4 +1,5 @@
 :- use_module(library(clpfd)).
+:- use_rendering(table).
 
 adjacent(X, Y, Z, [X,Y,Z|_]).
 adjacent(X, Y, Z, [_|Tail]) :-
@@ -472,7 +473,9 @@ filtrar_lista([A | Tail], E, [A | R], Elim):-
 
 % El predicado print_matrix/1 imprime una lista de listas como una
 % matriz. Su función es pura y exclusivamente de testeo.
-print_matrix([]).print_matrix([H|T]) :- write(H), nl, print_matrix(T).
+print_matrix([]).
+
+print_matrix([H|T]) :- write(H), nl, print_matrix(T).
 
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
