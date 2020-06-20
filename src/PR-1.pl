@@ -1,12 +1,11 @@
 :- use_module(library(clpfd)).
-:- use_rendering(table).
 
 adjacent(X, Y, Z, [X,Y,Z|_]).
 adjacent(X, Y, Z, [_|Tail]) :-
     adjacent(X, Y, Z, Tail).
 
 % El predicado aumentar/2 recibe una mamushka y almacena la
-% mamushka del siguiente tamaÃ±o.
+% mamushka del siguiente tamaño.
 aumentar(r1, r2).
 aumentar(r2, r3).
 aumentar(r3, r3).
@@ -39,25 +38,33 @@ mamushka_random(2, r1).
 % -EvoTablero: Parametro de salida que contiene la
 %              evolucion del tablero al que se le
 %              aplico el movimiento. Ver docs.
-desplazar(der, Num, Cant, Tablero, EvoTablero) :-
+desplazar(der, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_fila(Num, Cant, Tablero, Tablero1),
     append(Tablero1, [], Aux),
-    recorrer_columnas(Aux, Num, EvoTablero).
+    recorrer_columnas(Aux, Num, Tablero2),
+    burbujear_tablero(Tablero2, Tablero3),
+    rellenar(Tablero3, Tablero4).
 
-desplazar(izq, Num, Cant, Tablero, EvoTablero) :-
+desplazar(izq, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_fila(Num, (-Cant), Tablero, Tablero1),
     append(Tablero1, [], Aux),
-    recorrer_columnas(Aux, Num, EvoTablero).
+    recorrer_columnas(Aux, Num, Tablero2),
+    burbujear_tablero(Tablero2, Tablero3),
+    rellenar(Tablero3, Tablero4).
 
-desplazar(arriba, Num, Cant, Tablero, EvoTablero) :-
+desplazar(arriba, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_columna(Num, (-Cant), Tablero, Tablero1),
     append(Tablero1, [], Aux),
-    recorrer_filas(Aux, Num, EvoTablero).
+    recorrer_filas(Aux, Num, Tablero2),
+    burbujear_tablero(Tablero2, Tablero3),
+    rellenar(Tablero3, Tablero4).
 
-desplazar(abajo, Num, Cant, Tablero, EvoTablero) :-
+desplazar(abajo, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_columna(Num, Cant, Tablero, Tablero1),
     append(Tablero1, [], Aux),
-    recorrer_filas(Aux, Num, EvoTablero).
+    recorrer_filas(Aux, Num, Tablero2),
+    burbujear_tablero(Tablero2, Tablero3),
+    rellenar(Tablero3, Tablero4).
 
 % El predicado desplazar_fila desplaza la N-esima
 % fila del tablero en una determinada cantidad de
@@ -429,10 +436,43 @@ rellenar_aux_2([x | Tail], [M | R]):-
     random(0, 3, Random),
     mamushka_random(Random, M).
 
+% El predicado burbujear_tablero/2 envia todos los espacios vacios del
+% tablero hacia arriba, simulando a las mamushkas "cayendo" por la
+% gravedad. Utiliza el predicado auxiliar burbujear_tablero_aux/2.
+%
+% + Tablero: Tablero a burbujear.
+% - R: Tablero burbujeado.
+burbujear_tablero(Tablero, R):-
+    transpose(Tablero, TableroTrans),
+    burbujear_tablero_aux(TableroTrans, Aux),
+    transpose(Aux, R).
+
+burbujear_tablero_aux([], []).
+
+burbujear_tablero_aux([L | Tail], [Aux | R]):-
+    filtrar_lista(L, x, Mamushkas, Vacios),
+    append(Vacios, Mamushkas, Aux),
+    burbujear_tablero_aux(Tail, R).
+
+% El predicado filtrar_lista/4 toma una lista y filtra todos los
+% elementos E de ella, separando la lista en dos: la lista sin los
+% elementos E y otra lista con todos los elementos E eliminados.
+%
+% + List: Lista a utilizar.
+% + E: Elemento a filtrar.
+% - R: Lista filtrada.
+% - Elim: Lista de elementos filtrados.
+filtrar_lista([], _E, [], []).
+
+filtrar_lista([E | Tail], E, R, [E | Elim]):-
+    filtrar_lista(Tail, E, R, Elim).
+
+filtrar_lista([A | Tail], E, [A | R], Elim):-
+    filtrar_lista(Tail, E, R, Elim).
+
 % El predicado print_matrix/1 imprime una lista de listas como una
 % matriz. Su función es pura y exclusivamente de testeo.
-print_matrix([]).
-print_matrix([H|T]) :- write(H), nl, print_matrix(T).
+print_matrix([]).print_matrix([H|T]) :- write(H), nl, print_matrix(T).
 
 %%%%%%%%%%%%%%##%########################################%#%%%###################%###(((//////(((((((##%%%%%%%%%%%%%%%%#%############################%%%%%%%%%%%%%%%&&%&&&&&&&&&&&&&&&&&&&&&&%%%%%%%%%%%
 %%%%%%%%%%%%#%######################################################################(#((/////////(((((#####%%################################%%%%%%%%%&%&&&&&&&&&&&&&&&&&&%%%%%%%%%%#%%%##%#############
