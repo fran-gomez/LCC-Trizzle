@@ -1,12 +1,8 @@
 :- use_module(library(clpfd)).
 :- use_rendering(table).
 
-adjacent(X, Y, Z, [X,Y,Z|_]).
-adjacent(X, Y, Z, [_|Tail]) :-
-    adjacent(X, Y, Z, Tail).
-
 % El predicado aumentar/2 recibe una mamushka y almacena la
-% mamushka del siguiente tamaño.
+% mamushka del siguiente tamaï¿½o.
 aumentar(r1, r2).
 aumentar(r2, r3).
 aumentar(r3, r3).
@@ -405,8 +401,8 @@ verificar_consec_aux(L, Principal, _P0, _P1, P2, P3, P4, L3):-
     intercambiar(L1, 4, x, L2),
     intercambiar(L2, Principal, M, L3).
 
-% El predicado rellenar/2 rellena los espacios vacíos del tablero con
-% mamushkas al azar de tamaño 1. Utiliza los predicados auxiliares
+% El predicado rellenar/2 rellena los espacios vacï¿½os del tablero con
+% mamushkas al azar de tamaï¿½o 1. Utiliza los predicados auxiliares
 % rellenar_aux/2 y rellenar_aux_2/2.
 %
 % + Tablero: Tablero.
@@ -472,7 +468,7 @@ filtrar_lista([A | Tail], E, [A | R], Elim):-
     filtrar_lista(Tail, E, R, Elim).
 
 % El predicado print_matrix/1 imprime una lista de listas como una
-% matriz. Su función es pura y exclusivamente de testeo.
+% matriz. Su funciï¿½n es pura y exclusivamente de testeo.
 print_matrix([]).
 
 print_matrix([H|T]) :- write(H), nl, print_matrix(T).
@@ -552,5 +548,13 @@ test(desplazar) :-
     desplazar(izq, 2, 1, Tablero, EvoTablero),
     writeln(EvoTablero).
 
-:- end_tests(desplazar).
+test(desplazar) :-
+    Tablero = [ [r1, r2, r1, v1, a3],
+                [r1, v3, v3, a1, a3],
+                [a3, r1, v2, r1, v3],
+                [r1, v2, r1, v2, a2],
+                [r1, a2, r1, v2, a1] ],
+    desplazar(arriba, 2, 1, Tablero, EvoTablero),
+    writeln(EvoTablero).
+end_tests(desplazar).
 
