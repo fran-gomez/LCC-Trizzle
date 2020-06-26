@@ -39,29 +39,41 @@ desplazar(der, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_fila(Num, Cant, Tablero, Tablero1),
     append(Tablero1, [], Aux),
     recorrer_columnas(Aux, Num, Tablero2),
+    Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
     rellenar(Tablero3, Tablero4).
+desplazar(der, Num, Cant, Tablero, EvoTablero) :-
+    desplazar_fila(Num, Cant, Tablero, EvoTablero).
 
 desplazar(izq, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_fila(Num, (-Cant), Tablero, Tablero1),
     append(Tablero1, [], Aux),
     recorrer_columnas(Aux, Num, Tablero2),
+    Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
     rellenar(Tablero3, Tablero4).
+desplazar(izq, Num, Cant, Tablero, EvoTablero) :-
+    desplazar_fila(Num, (-Cant), Tablero, EvoTablero).
 
 desplazar(arriba, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_columna(Num, (-Cant), Tablero, Tablero1),
     append(Tablero1, [], Aux),
     recorrer_filas(Aux, Num, Tablero2),
+    Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
     rellenar(Tablero3, Tablero4).
+desplazar(arriba, Num, Cant, Tablero, EvoTablero) :-
+    desplazar_columna(Num, (-Cant), Tablero, EvoTablero).
 
 desplazar(abajo, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_columna(Num, Cant, Tablero, Tablero1),
     append(Tablero1, [], Aux),
     recorrer_filas(Aux, Num, Tablero2),
+    Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
     rellenar(Tablero3, Tablero4).
+desplazar(abajo, Num, Cant, Tablero, EvoTablero) :-
+    desplazar_columna(Num, Cant, Tablero, EvoTablero).
 
 % El predicado desplazar_fila desplaza la N-esima
 % fila del tablero en una determinada cantidad de
@@ -73,6 +85,7 @@ desplazar(abajo, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :
 % -D: Fila desplazada... Creo que aca se rompe todo
 desplazar_fila(N, Cant, [T|Ts], [T|D]) :-
     N > 0,
+    N < 5,
     N1 is N-1,
     desplazar_fila(N1, Cant, Ts, D).
 desplazar_fila(0, Cant, [T|Ts], D) :-
