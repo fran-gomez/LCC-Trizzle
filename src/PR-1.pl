@@ -37,43 +37,59 @@ mamushka_random(2, r1).
 %              aplico el movimiento. Ver docs.
 desplazar(der, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_fila(Num, Cant, Tablero, Tablero1),
+    format('Desplazando fila ~d en ~d posicion/es ~n', [Num, Cant]),
     append(Tablero1, [], Aux),
     recorrer_columnas(Aux, Num, Tablero2),
+    writeln("Buscando match en el tablero"),
     Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
+    writeln("Reordenando las fichas y rellenando el tablero"),
     rellenar(Tablero3, Tablero4).
 desplazar(der, Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, Cant, Tablero, EvoTablero).
+    desplazar_fila(Num, Cant, Tablero, EvoTablero),
+    format('Desplazando fila ~d en ~d posicion/es ~n', [Num, Cant]).
 
 desplazar(izq, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_fila(Num, (-Cant), Tablero, Tablero1),
+    format('Desplazando fila ~d en ~d posicion/es ~n', [Num, Cant]),
     append(Tablero1, [], Aux),
     recorrer_columnas(Aux, Num, Tablero2),
+    writeln("Buscando match en el tablero"),
     Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
+    writeln("Reordenando las fichas y rellenando el tablero"),
     rellenar(Tablero3, Tablero4).
 desplazar(izq, Num, Cant, Tablero, EvoTablero) :-
-    desplazar_fila(Num, (-Cant), Tablero, EvoTablero).
+    desplazar_fila(Num, (-Cant), Tablero, EvoTablero),
+    format('Desplazando fila ~d en ~d posicion/es ~n', [Num, Cant]).
 
 desplazar(arriba, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_columna(Num, (-Cant), Tablero, Tablero1),
+    format('Desplazando columna ~d en ~d posicion/es ~n', [Num, Cant]),
     append(Tablero1, [], Aux),
     recorrer_filas(Aux, Num, Tablero2),
+    writeln("Buscando match en el tablero"),
     Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
+    writeln("Reordenando las fichas y rellenando el tablero"),
     rellenar(Tablero3, Tablero4).
 desplazar(arriba, Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, (-Cant), Tablero, EvoTablero).
+    desplazar_columna(Num, (-Cant), Tablero, EvoTablero),
+    format('Desplazando columna ~d en ~d posicion/es ~n', [Num, Cant]).
 
 desplazar(abajo, Num, Cant, Tablero, [Tablero1, Tablero2, Tablero3, Tablero4]) :-
     desplazar_columna(Num, Cant, Tablero, Tablero1),
+    format('Desplazando columna ~d en ~d posicion/es ~n', [Num, Cant]),
     append(Tablero1, [], Aux),
     recorrer_filas(Aux, Num, Tablero2),
+    writeln("Buscando match en el tablero"),
     Tablero1 \= Tablero2,
     burbujear_tablero(Tablero2, Tablero3),
+    writeln("Reordenando las fichas y rellenando el tablero"),
     rellenar(Tablero3, Tablero4).
 desplazar(abajo, Num, Cant, Tablero, EvoTablero) :-
-    desplazar_columna(Num, Cant, Tablero, EvoTablero).
+    desplazar_columna(Num, Cant, Tablero, EvoTablero),
+    format('Desplazando columna ~d en ~d posicion/es ~n', [Num, Cant]).
 
 % El predicado desplazar_fila desplaza la N-esima
 % fila del tablero en una determinada cantidad de
